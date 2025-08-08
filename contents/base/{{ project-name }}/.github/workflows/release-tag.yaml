@@ -1,0 +1,63 @@
+name: Release  Tag
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions: write-all
+
+env:
+  GITHUB_TOKEN: ${{'{'}}{ secrets.GITHUB_TOKEN }}
+  ARTIFACTORY_TOKEN: ${{'{'}}{ secrets.ARTIFACTORY_TOKEN }}
+  NODE_OPTIONS: --max_old_space_size=4096
+
+jobs:
+  build-test-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: p6m-actions/docker-buildx-setup@v1
+
+      # Setup PNPM
+      - name: Setup PNPM
+        uses: p6m-actions/js-pnpm-setup@v1
+        with:
+          node-version: 20
+          pnpm-version: 8
+
+      # Build the application with PNPM
+      - name: Build application
+        uses: p6m-actions/js-pnpm-build@v1
+        with:
+          build-command: pnpm lint && pnpm test && pnpm build
+
+      # Extract version from tag
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      # Build and publish Docker image
+      - name: Build and publish Docker image
+        uses: p6m-actions/js-pnpm-docker-build-publish@v1
+        with:
+          working-directory: front-end-apps
+          image-name: p6m/application
+          registry: artifactory.example.com
+          registry-username: ${{'{'}}{ github.actor }}
+          registry-password: ${{'{'}}{ secrets.ARTIFACTORY_TOKEN }}
+          tags: |
+            latest
+            ${{'{'}}{ steps.get_version.outputs.VERSION }}
+
+      # Dispatch platform application manifest
+      - name: Dispatch platform application manifest
+        uses: p6m-actions/platform-application-manifest-dispatch@v1
+        with:
+          application-name: p6m-application
+          version: ${{'{'}}{ steps.get_version.outputs.VERSION }}
+          token: ${{'{'}}{ secrets.GITHUB_TOKEN }}

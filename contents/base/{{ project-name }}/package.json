@@ -1,0 +1,51 @@
+{
+  "name": "{{ project-name }}",
+  "version": "0.0.1",
+  "scripts": {
+    "reset": "npx rimraf node_modules ./**/node_modules",
+    "dev": "modern dev",
+    "build": "modern build",
+    "start": "modern start",
+    "serve": "modern serve",
+    "deploy": "modern deploy",
+    "new": "modern new",
+    "lint": "biome check",
+    "prepare": "simple-git-hooks",
+    "upgrade": "modern upgrade"
+  },
+  "engines": {
+    "node": ">=16.18.1"
+  },
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+      "biome check --files-ignore-unknown=true"
+    ]
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "dependencies": {
+    "@modern-js/plugin-router-v7": "^2.68.3",
+    "@modern-js/plugin-tailwindcss": "^2.68.3",
+    "@modern-js/runtime": "^2.68.3",
+    "@module-federation/modern-js": "^0.17.0",
+    "autoprefixer": "^10.4.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.17"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@modern-js/app-tools": "^2.68.3",
+    "@modern-js/tsconfig": "^2.68.3",
+    "@types/jest": "~29.2.4",
+    "@types/node": "~18.11.9",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "lint-staged": "~15.4.0",
+    "postcss": "^8.5.6",
+    "rimraf": "^6.0.1",
+    "simple-git-hooks": "^2.11.1",
+    "typescript": "~5.7.3"
+  }
+}

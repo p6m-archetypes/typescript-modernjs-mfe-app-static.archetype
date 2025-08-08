@@ -1,0 +1,82 @@
+name: Build Main
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write # Required for pushing tags
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{'{'}}{ steps.cut-tag.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: p6m-actions/js-pnpm-setup@v1
+        with:
+          node-version: "20"
+
+      - name: Build
+        uses: p6m-actions/js-pnpm-build@v1
+
+      - name: Cut Tag
+        id: cut-tag
+        uses: p6m-actions/js-pnpm-cut-tag@v1
+        with:
+          version-level: "patch"
+
+  docker-build:
+    uses: p6m-dev/github-actions/.github/workflows/build-deploy-docker.yaml@main
+    needs:
+      - build-and-release
+
+    with:
+      registry: ${{'{'}}{ vars.ARTIFACTORY_HOSTNAME }}
+      image-name: '{{ organization-name }}-docker/applications/{{ project-name }}-server'
+      context: "."
+      dockerfile: ./Dockerfile
+      tags: |
+        type=ref,event=branch
+        type=ref,event=pr
+        type=raw,value=latest,enable={{'{'}}{is_default_branch}}
+        type=raw,value={{'${'}}{ needs.build-and-release.outputs.version }},enable={{'{'}}{is_default_branch}}
+        type=sha
+      # linux-arm-runner: ubuntu-24.04-arm-provisioned
+
+    secrets:
+      username: ${{'{'}}{ secrets.ARTIFACTORY_USERNAME }}
+      password: ${{'{'}}{ secrets.ARTIFACTORY_IDENTITY_TOKEN }}
+      secrets: |
+        artifactory-token=${{'{'}}{ secrets.ARTIFACTORY_TOKEN }}
+
+  trigger-cd:
+    name: Trigger CD
+    runs-on: ubuntu-latest
+    if: ${{'{'}}{ github.ref_name == 'main' }}
+    needs:
+      - docker-build
+
+    steps:
+      - name: Get extra parameters for CICD
+        run: |
+          echo "GITHUB_REPOSITORY_BASENAME=$(basename ${GITHUB_REPOSITORY})" | tee -a $GITHUB_ENV
+
+      - name: Update Application Manifest
+        uses: p6m-actions/platform-application-manifest-dispatch@v1
+        with:
+          repository: ${{'{'}}{ github.repository }}
+          image-name: ${{'{'}}{ env.GITHUB_REPOSITORY_BASENAME }}
+          directory-name: ${{'{'}}{ env.GITHUB_REPOSITORY_BASENAME }}
+          environment: "dev"
+          digest: ${{'{'}}{ needs.docker-build.outputs.digest }}
+          update-manifest-token: ${{'{'}}{ secrets.UPDATE_MANIFEST_TOKEN }}
+          platform-dispatch-url: ${{'{'}}{ vars.PLATFORM_DISPATCH_URL }}
+

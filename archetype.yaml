@@ -1,0 +1,9 @@
+---
+description: "TypeScript Modern.js Micro Frontend Application"
+authors: ["Jimmie Fulton <jimmie@ybor.ai>"]
+languages: ["TypeScript", "JavaScript"]
+frameworks: ["Modern.js", "React"]
+tags: ["modern-js", "react", "typescript", "frontend", "mfe", "module-federation", "app", "tailwind", "static"]
+
+requires:
+  archetect: "2.0.0"

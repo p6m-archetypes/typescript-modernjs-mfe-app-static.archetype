@@ -1,0 +1,20 @@
+# Answer file for https://github.com/p6m-archetypes/typescript-modernjs-basic.archetype.git
+# Minimal configuration for testing GitHub Actions
+
+project: "test-modernjs-app"
+package_name: "test_modernjs_app"
+description: "Test Modern.js app application for GitHub Actions testing"
+version: "1.0.0"
+author_full: "Test Suite"
+organization-name: "test.example"
+project-title: "Test Modern.js Application"
+project-prefix: "test-modernjs"
+port: "3001"
+team-name: "platform"
+org-name: "test.example"
+solution-name: "test-modernjs-app"
+
+# Underscore versions needed by templates
+organization_name: "test.example"
+org_name: "test.example"
+solution_name: "test-modernjs-app"
