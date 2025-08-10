@@ -23,7 +23,7 @@ context += prompt("Port:", "port", #{
   help: "Port for the MFE app",
 });
 
-context += set("project-suffix", "app");
+context += set("project-suffix", "mfe-app");
 
 context += set("project-name", render("{{ project-prefix }}-{{ project-suffix }}", context), #{
   cases: [
