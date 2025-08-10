@@ -19,8 +19,8 @@ context += prompt("Project Prefix:", "project-prefix", #{
 });
 
 context += prompt("Port:", "port", #{
-  defaults_with: "3001",
-  help: "Port for the MFE app (shell should use 3000, apps use 3001+)",
+  defaults_with: "3000",
+  help: "Port for the MFE app",
 });
 
 context += set("project-suffix", "app");

@@ -338,14 +338,14 @@ test_docker_build() {
         
         # Test running the container
         log "${YELLOW}Testing Docker container startup...${NC}"
-        if docker run -d --name "${TEST_PROJECT_NAME}-test" -p 3001:80 "$TEST_PROJECT_NAME" >> "$VALIDATION_LOG" 2>&1; then
+        if docker run -d --name "${TEST_PROJECT_NAME}-test" -p 3000:80 "$TEST_PROJECT_NAME" >> "$VALIDATION_LOG" 2>&1; then
             
             # Wait for container to be ready
             local max_wait=30
             local waited=0
             
             while [ $waited -lt $max_wait ]; do
-                if curl -s --connect-timeout 5 --max-time 5 http://localhost:3001 >/dev/null 2>&1; then
+                if curl -s --connect-timeout 5 --max-time 5 http://localhost:3000 >/dev/null 2>&1; then
                     test_result 0 "Docker container started and accessible"
                     break
                 fi
@@ -356,7 +356,7 @@ test_docker_build() {
             if [ $waited -lt $max_wait ]; then
                 # Test container homepage content
                 log "${YELLOW}Validating Docker container homepage content...${NC}"
-                local container_content=$(curl -s --connect-timeout 5 --max-time 10 http://localhost:3001 2>/dev/null)
+                local container_content=$(curl -s --connect-timeout 5 --max-time 10 http://localhost:3000 2>/dev/null)
                 local container_errors=0
                 
                 # Check for expected content in container

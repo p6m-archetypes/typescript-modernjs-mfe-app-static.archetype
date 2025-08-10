@@ -9,7 +9,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-DEMO_DIR="$HOME/development/demos/mfe-demo"
+DEMO_DIR="$HOME/development/demos/mfe-demo-$(date +%Y%m%d%H%M%S)"
 SHELL_NAME="demo-shell"
 APP_NAME="demo-customer-app"
 SHELL_PORT=3000
