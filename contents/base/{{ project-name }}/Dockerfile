@@ -18,6 +18,9 @@ COPY . .
 # Install with offline mode (using cache)
 RUN pnpm install --frozen-lockfile --offline
 
+# Clear any existing build artifacts and Modern.js cache
+RUN rm -rf dist .modern-js node_modules/.modern-js
+
 # Build the static assets
 RUN pnpm run build
 
