@@ -12,7 +12,7 @@ context += prompt("Project Title:", "project-title", #{
 
 context += prompt("Project Prefix:", "project-prefix", #{
   defaults_with: render("{{ project-title | kebab_case }}", context),
-  help: "The project name; suffix '-mfe-app' will be appended automatically",
+  help: "The project name; suffix '-app' will be appended automatically",
   cases: [
     CasedIdentityCasedValue(PROGRAMMING_CASES),
   ], 
@@ -23,7 +23,7 @@ context += prompt("Port:", "port", #{
   help: "Port for the MFE app",
 });
 
-context += set("project-suffix", "mfe-app");
+context += set("project-suffix", "app");
 
 context += set("project-name", render("{{ project-prefix }}-{{ project-suffix }}", context), #{
   cases: [
