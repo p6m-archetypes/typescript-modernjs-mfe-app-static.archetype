@@ -200,7 +200,7 @@ validate_project_structure() {
         "modern.config.ts"
         "tsconfig.json"
         "Dockerfile"
-        "src/app.tsx"
+        "src/App.tsx"
         "src/pages/page.tsx"
     )
     

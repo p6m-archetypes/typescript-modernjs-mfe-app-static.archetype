@@ -22,18 +22,16 @@ RUN pnpm install --frozen-lockfile --offline
 RUN rm -rf dist .modern-js node_modules/.modern-js
 
 # Build the static assets
-RUN pnpm run build
+RUN pnpm run deploy
 
 # Production stage - serve static files with nginx
 FROM nginx:alpine
 
 # Copy built static files to nginx html directory with proper ownership
-COPY --from=builder --chown=nginx:nginx /app/dist/html/main/ /usr/share/nginx/html/
-COPY --from=builder --chown=nginx:nginx /app/dist/static/ /usr/share/nginx/html/static/
+COPY --from=builder --chown=nginx:nginx /app/.output/static/ /usr/share/nginx/html/static/
 
 # Copy custom nginx configuration
 COPY --from=builder --chown=nginx:nginx /app/nginx.conf /etc/nginx/conf.d/default.conf
-
 
 # Expose port 80
 # Set hostname to 0.0.0.0 to make it accessible from outside the container

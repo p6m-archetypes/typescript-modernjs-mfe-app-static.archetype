@@ -15,10 +15,10 @@ spec:
     image: '{{ project-name }}-server:latest' # Set to a digest in the .platform repo patch
     ports:
       - protocol: http
-        port: 3000
+        port: 80
     readinessProbe:
-      port: 3000
-      path: /
+      port: 80
+      path: /health
   networking:
     ingress:
       enabled: true
