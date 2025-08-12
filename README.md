@@ -1,6 +1,6 @@
 # TypeScript Modern.js MFE App Archetype
 
-![Latest Release](https://img.shields.io/github/v/release/p6m-archetypes/typescript-modernjs-mfe-app.archetype?style=flat-square&label=Latest%20Release&color=blue)
+![Latest Release](https://img.shields.io/github/v/release/p6m-archetypes/typescript-modernjs-mfe-app-static.archetype?style=flat-square&label=Latest%20Release&color=blue)
 
 This is an [Archetect](https://archetect.github.io/) archetype for building Modern.js micro frontend applications that can be consumed by MFE shell hosts using Module Federation.
 
@@ -20,7 +20,7 @@ This is an [Archetect](https://archetect.github.io/) archetype for building Mode
 To generate content from this Archetype, copy and execute the following command:
 
 ```sh
-archetect render git@github.com:p6m-archetypes/typescript-modernjs-mfe-app.archetype.git#v1
+archetect render https://github.com/p6m-archetypes/typescript-modernjs-mfe-app-static.archetype.git#v1
 ```
 
 ## 🚀 Complete MFE Demo
@@ -38,13 +38,15 @@ cd typescript-modernjs-mfe-app.archetype
 ```
 
 **What the demo creates:**
+
 - Shell host application (port 3000)
-- Customer management MFE app (port 3001) 
+- Customer management MFE app (port 3001)
 - Module Federation integration
 - Docker Compose for production deployment
 - Development and production scripts
 
 **Demo access points:**
+
 - Shell: http://localhost:3000
 - Customer App: http://localhost:3001
 - Integrated Demo: http://localhost:3000/customers
