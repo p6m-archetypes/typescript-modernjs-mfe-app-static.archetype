@@ -24,6 +24,102 @@ jobs:
         with:
           node-version: "20"
 
+{% if host-repository-name %}
+
+      - name: Build (generate .output)
+        env:
+          MODERNJS_DEPLOY: node
+        run: pnpm run deploy
+
+      - name: Cut Tag
+        id: cut-tag
+        uses: p6m-actions/js-pnpm-cut-tag@v1
+        with:
+          version-level: "patch"
+
+      # --- Publish .output to another repo/branch ---
+      - name: Publish .output
+        env:
+          TARGET_REPO: '{{ organization-name }}/{{ host-repository-name }}'
+          TARGET_BRANCH: '{{ host-repository-branch }}'
+          PUBLISH_DIR: '{{ host-path-prefix }}/{{ project-name }}'
+          GITHUB_TOKEN: ${{'{'}}{ secrets.GITHUB_TOKEN }}
+          DEPLOY_PAT: ${{'{'}}{ secrets.DEPLOY_PAT }}
+        run: |
+          set -euo pipefail
+
+          # Use version from cut-tag step
+          VERSION="${{'{'}}{ steps.cut-tag.outputs.version }}"
+          
+          # defaults if not provided
+          REPO="${TARGET_REPO}"
+          BRANCH="${TARGET_BRANCH:-main}"
+          
+          # Append version to publish directory
+          SUBDIR="${PUBLISH_DIR}/${VERSION}"
+
+          echo "Publishing .output to ${REPO}@${BRANCH} (path: ${SUBDIR})"
+
+          # Check if DEPLOY_PAT is available
+          if [ -z "${DEPLOY_PAT:-}" ]; then
+            echo "ERROR: DEPLOY_PAT secret not found"
+            echo "Please create a Personal Access Token with 'repo' scope and add it as DEPLOY_PAT secret"
+            exit 1
+          fi
+
+          # Authenticate with GitHub CLI using DEPLOY_PAT
+          # Clear GITHUB_TOKEN so gh uses our DEPLOY_PAT instead
+          unset GITHUB_TOKEN
+          echo "${DEPLOY_PAT}" | gh auth login --with-token
+
+          # Prepare a clean worktree for the target repo
+          WORK=/tmp/publish
+          rm -rf "$WORK"
+          mkdir -p "$WORK"
+          git init "$WORK"
+          cd "$WORK"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Configure git to use the DEPLOY_PAT for authentication
+          git config http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${DEPLOY_PAT} | base64)"
+          git remote add origin "https://github.com/${REPO}.git"
+
+          # Try to fetch existing branch; if not present, we'll create an orphan
+          if git ls-remote --exit-code --heads origin "${BRANCH}" > /dev/null 2>&1; then
+            git fetch origin "${BRANCH}":"${BRANCH}"
+            git checkout "${BRANCH}"
+          else
+            git checkout --orphan "${BRANCH}"
+          fi
+
+          # Only clear the specific version directory if it exists, preserve everything else
+          if [ -d "${SUBDIR}" ]; then
+            echo "Updating existing version directory: ${SUBDIR}"
+            git rm -r --quiet "${SUBDIR}" 2>/dev/null || true
+          else
+            echo "Creating new version directory: ${SUBDIR}"
+          fi
+          
+          mkdir -p "${SUBDIR}"
+          rsync -a "${GITHUB_WORKSPACE}/.output/static/" "${SUBDIR}/"
+
+          # Optional for GitHub Pages-style hosts
+          touch .nojekyll
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          SHORT_SHA="$(echo "${GITHUB_SHA}" | cut -c1-7)"
+          git commit -m "chore: publish static assets from ${VERSION} (${SHORT_SHA}) - $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          
+          # Push changes using token-authenticated remote
+          git push -u origin "${BRANCH}" --force-with-lease
+{% endif %}
+{% if not host-repository-name %}
       - name: Build
         uses: p6m-actions/js-pnpm-build@v1
 
@@ -32,7 +128,6 @@ jobs:
         uses: p6m-actions/js-pnpm-cut-tag@v1
         with:
           version-level: "patch"
-
   docker-build:
     uses: p6m-dev/github-actions/.github/workflows/build-deploy-docker.yaml@main
     needs:
@@ -79,4 +174,5 @@ jobs:
           digest: ${{'{'}}{ needs.docker-build.outputs.digest }}
           update-manifest-token: ${{'{'}}{ secrets.UPDATE_MANIFEST_TOKEN }}
           platform-dispatch-url: ${{'{'}}{ vars.PLATFORM_DISPATCH_URL }}
+{% endif %}
 

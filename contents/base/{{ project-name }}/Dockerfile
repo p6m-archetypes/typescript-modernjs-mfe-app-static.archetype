@@ -1,3 +1,9 @@
+{% if host-repository-name %}
+# NOTE: This Dockerfile is not used when deploying to a host repository.
+# Your project is configured for static asset deployment to: {{ host-repository-name }}
+# To switch to containerized deployment, remove the host repository configuration.
+#
+{% endif %}
 FROM node:22-alpine AS builder
 
 # Install pnpm

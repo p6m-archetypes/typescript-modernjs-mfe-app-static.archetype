@@ -1,0 +1,23 @@
+# Answer file for hosted deployment mode (with host repository)
+# Same as containerized except for host repository values
+
+project: "test-modernjs-app"
+package_name: "test_modernjs_app"
+description: "Test Modern.js app application for containerized deployment"
+version: "1.0.0"
+author_full: "Test Suite"
+organization-name: "test-org"
+project-title: "Test Modern.js Application"
+project-prefix: "test-modernjs"
+host-repository-name: "demo-apps"
+host-repository-branch: "main"
+host-path-prefix: "apps"
+team-name: "platform"
+org-name: "test-org"
+port: "3000"
+solution-name: "test-modernjs-app"
+
+# Underscore versions needed by templates
+organization_name: "test-org"
+org_name: "test-org"
+solution_name: "test-modernjs-app"

@@ -18,23 +18,31 @@ context += prompt("Project Prefix:", "project-prefix", #{
   ], 
 });
 
-context += prompt("Host Repository Name (optional):", "host-repository-name", #{
-  defaults_with: nu,
-  optional: true,
-  help: "The repository name of the host to commit the output to (if hosting MFEs in a consolidated host)",
-})
-
-if context["host-repository-name"] != nu {
-  context += prompt("Host Repository Branch (optional):", "host-repository-branch", #{
-    defaults_with: "main",
-    help: "The branch name in the host to commit the output to (if hosting MFEs in a consolidated host)",
-  })
-}
-
 context += prompt("Port:", "port", #{
   defaults_with: "3000",
   help: "Port for the MFE app",
 });
+
+context += prompt("Host Repository Name (optional):", "host-repository-name", #{
+  defaults_with: "",
+  optional: true,
+  min: 0,
+  help: "The repository name of the host to commit the output to (if hosting MFEs in a consolidated host)",
+});
+
+if context["host-repository-name"] != "" {
+  context += prompt("Host Repository Branch (optional):", "host-repository-branch", #{
+    defaults_with: "main",
+    help: "The branch name in the host repo to commit the output to (if hosting MFEs in a consolidated host)",
+  });
+}
+
+if context["host-repository-name"] != "" {
+  context += prompt("Host Path Prefix (optional):", "host-path-prefix", #{
+    defaults_with: "apps",
+    help: "The prefix/path of the directory in the host repo to copy output to (if hosting MFEs in a consolidated host)",
+  });
+}
 
 context += set("project-suffix", "app");
 

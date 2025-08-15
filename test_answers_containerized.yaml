@@ -1,0 +1,23 @@
+# Answer file for containerized deployment mode (no host repository)
+# Minimal configuration for testing GitHub Actions
+
+project: "test-modernjs-app"
+package_name: "test_modernjs_app"
+description: "Test Modern.js app application for containerized deployment"
+version: "1.0.0"
+author_full: "Test Suite"
+organization-name: "test-org"
+project-title: "Test Modern.js Application"
+project-prefix: "test-modernjs"
+port: "3000"
+team-name: "platform"
+org-name: "test-org"
+solution-name: "test-modernjs-app"
+
+# Underscore versions needed by templates
+organization_name: "test-org"
+org_name: "test-org"
+solution_name: "test-modernjs-app"
+
+# Empty host repository name for containerized mode
+host-repository-name: ""
