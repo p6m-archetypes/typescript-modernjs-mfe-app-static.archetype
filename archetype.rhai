@@ -44,6 +44,12 @@ if context["host-repository-name"] != "" {
   });
 }
 
+if context["host-repository-name"] != "" {
+  context += prompt("Deploy Secret Name:", "deploy-secret-name", #{
+    help: "The name of the secret containing the token to use for committing to the host repository",
+  });
+}
+
 context += set("project-suffix", "app");
 
 context += set("project-name", render("{{ project-prefix }}-{{ project-suffix }}", context), #{

@@ -44,7 +44,7 @@ jobs:
           TARGET_BRANCH: '{{ host-repository-branch }}'
           PUBLISH_DIR: '{{ host-path-prefix }}/{{ project-name }}'
           GITHUB_TOKEN: ${{'{'}}{ secrets.GITHUB_TOKEN }}
-          DEPLOY_PAT: ${{'{'}}{ secrets.DEPLOY_PAT }}
+          DEPLOY_PAT: ${{'{'}}{ secrets.{{deploy-secret-name}} }}
         run: |
           set -euo pipefail
 
