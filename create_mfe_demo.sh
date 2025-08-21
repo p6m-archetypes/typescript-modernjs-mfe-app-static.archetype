@@ -126,7 +126,7 @@ import { createModuleFederationConfig } from '@module-federation/modern-js';
 export default createModuleFederationConfig({
   name: 'shell',
   remotes: {
-    demo_customer_app: 'demo_customer_app@http://localhost:3001/static/remoteEntry.js',
+    demo_customer_app: 'demo_customer_app@http://localhost:3001/remoteEntry.js',
   },
   shared: {
     react: { singleton: true },

@@ -102,7 +102,7 @@ jobs:
           fi
           
           mkdir -p "${SUBDIR}"
-          rsync -a "${GITHUB_WORKSPACE}/.output/static/" "${SUBDIR}/"
+          rsync -a "${GITHUB_WORKSPACE}/.output/" "${SUBDIR}/"
 
           # Optional for GitHub Pages-style hosts
           touch .nojekyll
