@@ -34,7 +34,7 @@ RUN pnpm run deploy
 FROM nginx:alpine
 
 # Copy built static files to nginx html directory with proper ownership
-COPY --from=builder --chown=nginx:nginx /app/.output/static/ /usr/share/nginx/html/static/
+COPY --from=builder --chown=nginx:nginx /app/.output/ /usr/share/nginx/html/
 
 # Copy custom nginx configuration
 COPY --from=builder --chown=nginx:nginx /app/nginx.conf /etc/nginx/conf.d/default.conf

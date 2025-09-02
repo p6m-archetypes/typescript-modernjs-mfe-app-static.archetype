@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
   "vcs": {
     "enabled": true,
     "defaultBranch": "main",
@@ -8,14 +8,15 @@
   },
   "formatter": {
     "enabled": true,
-    "indentStyle": "space"
+    "indentStyle": "space",
+    "lineEnding": "lf"
   },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
       "arrowParentheses": "asNeeded",
       "jsxQuoteStyle": "double",
-      "lineWidth": 80
+      "lineWidth": 120
     }
   },
   "linter": {
@@ -24,14 +25,14 @@
       "recommended": true,
       "suspicious": {
         "noDuplicateFontNames": "off"
+      },
+      "a11y": {
+        "useKeyWithClickEvents": "off"
       }
     }
   },
-  "organizeImports": {
-    "enabled": true
-  },
   "files": {
     "ignoreUnknown": true,
-    "ignore": [".vscode/**/*", "node_modules/**/*", "dist/**/*"]
+    "includes": ["**", "!.vscode", "!node_modules", "!dist"]
   }
 }

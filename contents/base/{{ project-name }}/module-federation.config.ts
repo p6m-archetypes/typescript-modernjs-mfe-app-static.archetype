@@ -5,7 +5,7 @@ export default createModuleFederationConfig({
   manifest: {
     filePath: 'static',
   },
-  filename: 'static/remoteEntry.js',
+  filename: 'remoteEntry.js',
   exposes: {
     './{{ project-name }}-content': './src/components/{{ project-name }}-content.tsx',
   },
