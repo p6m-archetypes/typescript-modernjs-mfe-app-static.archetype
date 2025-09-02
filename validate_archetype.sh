@@ -25,16 +25,29 @@ CURRENT_ANSWERS_FILE=""
 cleanup() {
     echo -e "${BLUE}NOT cleaning up for debugging...${NC}"
     echo -e "${YELLOW}Generated project directories in: $TEMP_DIR${NC}"
-    for project in "$CONTAINERIZED_PROJECT_NAME" "$HOSTED_PROJECT_NAME"; do
-        if [ -d "$TEMP_DIR/$project" ]; then
-            echo -e "${YELLOW}  - $TEMP_DIR/$project${NC}"
-            if [ -f "$TEMP_DIR/$project/docker-compose.yml" ] || [ -f "$TEMP_DIR/$project/Dockerfile" ]; then
-                echo -e "${YELLOW}To manually clean up later, run:${NC}"
-                echo -e "${YELLOW}cd $TEMP_DIR/$project && docker-compose down --volumes --remove-orphans 2>/dev/null || true${NC}"
+    
+    # Check both test mode subdirectories
+    for mode in "containerized" "hosted"; do
+        local mode_dir="$TEMP_DIR/$mode-test"
+        if [ -d "$mode_dir" ]; then
+            echo -e "${YELLOW}  - $mode_dir/${NC}"
+            # Check for project within the mode directory
+            if [ "$mode" = "containerized" ]; then
+                local project_path="$mode_dir/$CONTAINERIZED_PROJECT_NAME"
+            else
+                local project_path="$mode_dir/$HOSTED_PROJECT_NAME"
+            fi
+            
+            if [ -d "$project_path" ]; then
+                echo -e "${YELLOW}    └── $project_path${NC}"
+                if [ -f "$project_path/docker-compose.yml" ] || [ -f "$project_path/Dockerfile" ]; then
+                    echo -e "${YELLOW}To manually clean up Docker resources later, run:${NC}"
+                    echo -e "${YELLOW}cd $project_path && docker-compose down --volumes --remove-orphans 2>/dev/null || true${NC}"
+                fi
             fi
         fi
     done
-    echo -e "${YELLOW}rm -rf $TEMP_DIR${NC}"
+    echo -e "${YELLOW}To remove all generated files: rm -rf $TEMP_DIR${NC}"
     # rm -rf "$TEMP_DIR"  # DISABLED
 }
 
@@ -342,7 +355,7 @@ validate_project_structure() {
 test_dependency_installation() {
     log "\n${BLUE}Testing dependency installation...${NC}"
     
-    cd "$TEMP_DIR/$TEST_PROJECT_NAME"
+    cd "$CURRENT_PROJECT_NAME"
     
     log "${YELLOW}Running: npm install${NC}"
     if npm install >> "$VALIDATION_LOG" 2>&1; then
@@ -385,7 +398,7 @@ test_dependency_installation() {
 test_project_build() {
     log "\n${BLUE}Testing project build...${NC}"
     
-    cd "$TEMP_DIR/$TEST_PROJECT_NAME"
+    cd "$CURRENT_PROJECT_NAME"
     
     local build_start_time=$(date +%s)
     
@@ -413,7 +426,7 @@ test_project_build() {
 test_docker_build() {
     log "\n${BLUE}Testing Docker build...${NC}"
     
-    cd "$TEMP_DIR/$TEST_PROJECT_NAME"
+    cd "$CURRENT_PROJECT_NAME"
     
     local docker_start_time=$(date +%s)
     
@@ -612,8 +625,8 @@ main() {
     if [ "$generate_only" = "true" ]; then
         log "\n${YELLOW}Stopping after generation as requested.${NC}"
         log "${YELLOW}Projects generated at:${NC}"
-        log "${YELLOW}  - Containerized: $TEMP_DIR/$CONTAINERIZED_PROJECT_NAME${NC}"
-        log "${YELLOW}  - Hosted: $TEMP_DIR/$HOSTED_PROJECT_NAME${NC}"
+        log "${YELLOW}  - Containerized: $TEMP_DIR/containerized-test/$CONTAINERIZED_PROJECT_NAME${NC}"
+        log "${YELLOW}  - Hosted: $TEMP_DIR/hosted-test/$HOSTED_PROJECT_NAME${NC}"
         return 0
     fi
     
@@ -632,15 +645,15 @@ main() {
     if [ $TESTS_FAILED -eq 0 ]; then
         log "\n${GREEN}🎉 ALL DUAL-MODE VALIDATION TESTS PASSED! ARCHETYPE IS BOSS-LEVEL READY! 🚀${NC}"
         log "${YELLOW}Generated projects preserved at:${NC}"
-        log "${YELLOW}  - Containerized: $TEMP_DIR/$CONTAINERIZED_PROJECT_NAME${NC}"
-        log "${YELLOW}  - Hosted: $TEMP_DIR/$HOSTED_PROJECT_NAME${NC}"
+        log "${YELLOW}  - Containerized: $TEMP_DIR/containerized-test/$CONTAINERIZED_PROJECT_NAME${NC}"
+        log "${YELLOW}  - Hosted: $TEMP_DIR/hosted-test/$HOSTED_PROJECT_NAME${NC}"
         return 0
     else
         log "\n${RED}❌ Validation failed. Please check the issues above.${NC}"
         log "${YELLOW}Validation log available at: $VALIDATION_LOG${NC}"
         log "${YELLOW}Generated projects preserved at:${NC}"
-        log "${YELLOW}  - Containerized: $TEMP_DIR/$CONTAINERIZED_PROJECT_NAME${NC}"
-        log "${YELLOW}  - Hosted: $TEMP_DIR/$HOSTED_PROJECT_NAME${NC}"
+        log "${YELLOW}  - Containerized: $TEMP_DIR/containerized-test/$CONTAINERIZED_PROJECT_NAME${NC}"
+        log "${YELLOW}  - Hosted: $TEMP_DIR/hosted-test/$HOSTED_PROJECT_NAME${NC}"
         return 1
     fi
 }
