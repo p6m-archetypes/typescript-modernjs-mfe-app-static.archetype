@@ -37,8 +37,12 @@ jobs:
         with:
           version-level: "patch"
 
-      # --- Publish .output to another repo/branch ---
-      - name: Publish .output
+      # --- Publish static assets to host repository ---
+      # This step deploys the built static assets (.output/static/) to a separate repository
+      # configured for hosting multiple micro frontends. The assets are organized by version
+      # to enable parallel deployments and easy rollbacks. Authentication uses a Personal 
+      # Access Token (PAT) to push to the target repository.
+      - name: Deploy static assets to host repository
         env:
           TARGET_REPO: '{{ organization-name }}/{{ host-repository-name }}'
           TARGET_BRANCH: '{{ host-repository-branch }}'
